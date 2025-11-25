@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Sistema de Gestión de Proyectos - Funciones Lambda Individuales
+Description: Sistema de GestiÃ³n de Proyectos - Funciones Lambda Individuales
 
 Parameters:
   Environment:
@@ -90,14 +90,14 @@ Resources:
             Path: /auth/register
             Method: POST
 
-  # Iniciar sesión
+  # Iniciar sesiÃ³n
   authloginFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub 'auth-login-${Environment}'
       CodeUri: src/lambda/auth-login/
       Handler: app.lambda_handler
-      Description: Iniciar sesión
+      Description: Iniciar sesiÃ³n
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ProjectManagementTable
@@ -298,6 +298,32 @@ Resources:
             RestApiId: !Ref ProjectManagementAPI
             Path: /projects/{id}/tasks/{taskId}
             Method: DELETE
+  
+  # ==================== FRONTEND HOSTING ====================
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'project-management-frontend-${Environment}-${AWS::AccountId}'
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${FrontendBucket.Arn}/*'
 
 # ==================== OUTPUTS ====================
 Outputs:
