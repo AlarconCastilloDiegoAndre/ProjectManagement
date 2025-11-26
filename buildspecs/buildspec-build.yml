@@ -32,12 +32,9 @@ phases:
       - sam package --template-file .aws-sam/build/template.yaml --s3-bucket $BUILD_BUCKET --output-template-file packaged.yaml
 
 artifacts:
-  # ARTEFACTO PRINCIPAL (Backend)
-  # Este se mapeará automáticamente al primer output de tu Pipeline (BuildArtifact)
   files:
     - packaged.yaml
     
-  # ARTEFACTOS SECUNDARIOS
   secondary-artifacts:
     FrontendArtifact:
       base-directory: frontend/dist
